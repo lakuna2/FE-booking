@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- FORM Booking -->
+    <div>
+        <form id="reservation-form" action="#" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" required><br>
+
+            <label for="service">Select Service:</label>
+            <select id="service" name="service" required>
+                <option value="Tooth Filling">Tooth Filling</option>
+                    <option value="Tooth Whitening">Tooth Whitening</option>
+                    <option value="Denture Fitting">Denture Fitting</option>
+                    <option value="Dental Health Consultation">Dental Health Consultation</option>
+                    <option value="Tooth Extraction">Tooth Extraction</option>
+                    <option value="Professional Scalling">Professional Scalling</option>
+                    <option value="Dental Check Up">Dental Check Up</option>
+                    <option value="Braces Installation">Braces Installation</option>
+            </select><br>
+
+            <label for="doctor">Select Doctor:</label>
+            <select id="doctor" name="doctor" required>
+                <!-- Pilihan dokter akan diperbarui berdasarkan layanan yang dipilih -->
+            </select><br>
+
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" required min="2023-09-25"><br>
+
+            <label for="time">Select Time:</label>
+            <select id="time" name="time" required>
+                <option value="08:00">08:00 AM</option>
+                    <option value="09:00">09:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="13:00">01:00 PM</option>
+                    <option value="14:00">02:00 PM</option>
+                    <option value="15:00">03:00 PM</option>
+                    <option value="16:00">04:00 PM</option>
+                    <option value="17:00">05:00 PM</option>
+            </select><br>
+
+            <input type="submit" value="Reservasi" onclick="submitForm();">
+        </form>
+    </div>
+
+    <!-- Tabel untuk menampilkan hasil input -->
+    <div>
+        <h2>Hasil Reservasi</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Service</th>
+                    <th>Doctor</th>
+                    <th>Reservation Date</th>
+                    <th>Reservation Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Tempatkan data reservasi yang diisi oleh pengguna di sini -->
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        
+    </footer>
+    
+    <script src="script.js"></script>
+
+</body>
+</html>
