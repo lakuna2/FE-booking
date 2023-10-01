@@ -79,61 +79,67 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ---------------------------------------------------------------------------------------- //
 
-  // Fungsi ini akan dipanggil saat formulir disubmit secara manual
-//   function submitForm() {
-//     // Mendapatkan referensi ke elemen-elemen formulir
-//     var name = document.getElementById('name').value;
-//     var email = document.getElementById('email').value;
-//     var phone = document.getElementById('phone').value;
-//     var service = document.getElementById('service').value;
-//     var doctor = document.getElementById('doctor').value;
-//     var date = document.getElementById('date').value;
-//     var time = document.getElementById('time').value;
-
-//     // Mendapatkan referensi ke tabel hasil
-//     var table = document.querySelector('table tbody');
-
-//     // Membuat baris baru dalam tabel hasil
-//     var newRow = table.insertRow(table.rows.length);
-
-//     // Mengisi data dalam baris baru
-//     var cell1 = newRow.insertCell(0);
-//     cell1.innerHTML = name;
-
-//     var cell2 = newRow.insertCell(1);
-//     cell2.innerHTML = email;
-
-//     var cell3 = newRow.insertCell(2);
-//     cell3.innerHTML = phone;
-
-//     var cell4 = newRow.insertCell(3);
-//     cell4.innerHTML = service;
-
-//     var cell5 = newRow.insertCell(4);
-//     cell5.innerHTML = doctor;
-
-//     var cell6 = newRow.insertCell(5);
-//     cell6.innerHTML = date;
-
-//     var cell7 = newRow.insertCell(6);
-//     cell7.innerHTML = time;
-
-//     // Reset formulir setelah data ditambahkan
-//     document.getElementById('reservation-form').reset();
-// }
-
-
-
-  // ---------------------------------------------------------------------------------------- //
-
   const API_BASE_URL = 'https://railway-booking-production.up.railway.app';
 
-  async function fetchBooking() {
+  // Mendapatkan referensi ke elemen-elemen HTML
+  const reservationForm = document.getElementById('reservation-form');
+  const resultTable = document.querySelector('tbody');
+  
+  // Mendefinisikan fungsi untuk mengirim data reservasi ke API
+  async function submitForm(event) {
+    event.preventDefault();
+  
+    const formData = new FormData(reservationForm);
+  
+    const bookingData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      service: formData.get('service'),
+      doctor: formData.get('doctor'),
+      reservationdate: formData.get('date'),
+      reservationtime: formData.get('time')
+    };
+  
     try {
-        const response = await fetch(`${API_BASE_URL}/booking`);
-        // const data = await response.json();
-        // const booking = 
+      const response = await fetch(`${API_BASE_URL}/booking`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bookingData)
+      });
+  
+      if (response.ok) {
+        const createdBooking = await response.json();
+        displayBooking(createdBooking);
+      } else {
+        console.error('Gagal membuat reservasi');
+      }
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
   }
+  
+  // Mendefinisikan fungsi untuk menampilkan data reservasi ke dalam tabel
+  function displayBooking(booking) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${booking.name}</td>
+      <td>${booking.email}</td>
+      <td>${booking.phone}</td>
+      <td>${booking.service}</td>
+      <td>${booking.doctor}</td>
+      <td>${booking.reservationdate}</td>
+      <td>${booking.reservationtime}</td>
+    `;
+  
+    resultTable.appendChild(row);
+  
+    // Setelah menampilkan data, kosongkan formulir untuk reservasi berikutnya jika perlu
+    reservationForm.reset();
+  }
+  
+  // Menghubungkan fungsi submitForm dengan penyerahan formulir
+  reservationForm.addEventListener('submit', submitForm);
+  
