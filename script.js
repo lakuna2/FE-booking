@@ -85,6 +85,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const reservationForm = document.getElementById('reservation-form');
   const resultTable = document.querySelector('tbody');
   
+  // Menghubungkan fungsi submitForm dengan penyerahan formulir
+  reservationForm.addEventListener('submit', submitForm);
+  
+  // Mengambil data reservasi saat halaman dimuat
+  window.addEventListener('DOMContentLoaded', fetchData);
+  
   // Mendefinisikan fungsi untuk mengirim data reservasi ke API
   async function submitForm(event) {
     event.preventDefault();
@@ -140,6 +146,20 @@ document.addEventListener("DOMContentLoaded", function () {
     reservationForm.reset();
   }
   
-  // Menghubungkan fungsi submitForm dengan penyerahan formulir
-  reservationForm.addEventListener('submit', submitForm);
+  // Mendefinisikan fungsi untuk mengambil data reservasi dari API
+  async function fetchData() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/booking`);
+      if (response.ok) {
+        const bookings = await response.json();
+        bookings.forEach((booking) => {
+          displayBooking(booking);
+        });
+      } else {
+        console.error('Gagal mengambil data reservasi');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
   
