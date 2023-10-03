@@ -78,9 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
   // ---------------------------------------------------------------------------------------- //
-
   const API_BASE_URL = 'https://railway-booking-production.up.railway.app';
 
+  const bookedTimes = {}; // Objek untuk melacak waktu yang sudah terpakai di hari yang sama
+  
   // Mendapatkan referensi ke elemen-elemen HTML
   const reservationForm = document.getElementById('reservation-form');
   const resultTable = document.querySelector('tbody');
@@ -103,9 +104,18 @@ document.addEventListener("DOMContentLoaded", function () {
       phone: formData.get('phone'),
       service: formData.get('service'),
       doctor: formData.get('doctor'),
-      reservationdate: formData.get('date'),
+      reservationdate: new Date(formData.get('date')).toISOString(),
       reservationtime: formData.get('time')
     };
+  
+    const selectedDate = bookingData.reservationdate;
+    const selectedTime = bookingData.reservationtime;
+  
+    // Memeriksa apakah waktu yang dipilih sudah terpakai di hari yang sama
+    if (bookedTimes[selectedDate] && bookedTimes[selectedDate].includes(selectedTime)) {
+      alert('Waktu yang dipilih sudah terpakai. Silakan pilih waktu yang lain.');
+      return;
+    }
   
     try {
       const response = await fetch(`${API_BASE_URL}/booking`, {
@@ -119,6 +129,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (response.ok) {
         const createdBooking = await response.json();
         displayBooking(createdBooking);
+        // Tandai waktu yang sudah terpakai
+        if (!bookedTimes[selectedDate]) {
+          bookedTimes[selectedDate] = [];
+        }
+        bookedTimes[selectedDate].push(selectedTime);
       } else {
         console.error('Gagal membuat reservasi');
       }
@@ -127,24 +142,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
   
-  // Mendefinisikan fungsi untuk menampilkan data reservasi ke dalam tabel
-  function displayBooking(booking) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${booking.name}</td>
-      <td>${booking.email}</td>
-      <td>${booking.phone}</td>
-      <td>${booking.service}</td>
-      <td>${booking.doctor}</td>
-      <td>${booking.reservationdate}</td>
-      <td>${booking.reservationtime}</td>
-    `;
-  
-    resultTable.appendChild(row);
-  
-    // Setelah menampilkan data, kosongkan formulir untuk reservasi berikutnya jika perlu
-    reservationForm.reset();
-  }
+
+// Mendefinisikan fungsi untuk menampilkan data reservasi ke dalam tabel
+function displayBooking(booking) {
+  const row = document.createElement('tr');
+
+  // Mengambil tanggal dari booking.reservationdate (format: yyyy-mm-dd)
+  const reservationDate = booking.reservationdate.substring(0, 10); // Ambil tanggalnya saja
+  const dateParts = reservationDate.split('-');
+  const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Format ulang menjadi dd-mm-yyyy
+
+  row.innerHTML = `
+    <td>${booking.name}</td>
+    <td>${booking.email}</td>
+    <td>${booking.phone}</td>
+    <td>${booking.service}</td>
+    <td>${booking.doctor}</td>
+    <td>${formattedDate}</td>
+    <td>${booking.reservationtime}</td>
+  `;
+
+
+  resultTable.appendChild(row);
+
+  // Setelah menampilkan data, kosongkan formulir untuk reservasi berikutnya jika perlu
+  reservationForm.reset();
+}
+
   
   // Mendefinisikan fungsi untuk mengambil data reservasi dari API
   async function fetchData() {
@@ -154,6 +178,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const bookings = await response.json();
         bookings.forEach((booking) => {
           displayBooking(booking);
+          // Tambahkan waktu yang sudah terpakai ke bookedTimes
+          const reservationDate = booking.reservationdate.substring(0, 10); // Ambil tanggalnya saja
+          const selectedTime = booking.reservationtime;
+          if (!bookedTimes[reservationDate]) {
+            bookedTimes[reservationDate] = [];
+          }
+          bookedTimes[reservationDate].push(selectedTime);
         });
       } else {
         console.error('Gagal mengambil data reservasi');
